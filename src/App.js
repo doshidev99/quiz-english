@@ -6,21 +6,31 @@ import HomePage from "./pages/Home";
 import LuyenDe from "./pages/LuyenDe";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Document from "./pages/Document";
+import DetailDocument from "./pages/DetailDocument";
 
 function App() {
   return (
     <Router>
+      <Header />
+
       <Switch>
         <Route exact path="/">
           {/* // children props component */}
           <HomePage />
         </Route>
-        <Route path="/luyen-de">
-          <Header />
+        <Route path="/exercise">
           <LuyenDe />
-          <Footer />
+        </Route>
+
+        <Route exact path="/document">
+          <Document />
+        </Route>
+        <Route path="/document/:id">
+          <DetailDocument />
         </Route>
       </Switch>
+      <Footer />
     </Router>
   );
 }

@@ -2,32 +2,64 @@ import React from "react";
 import { Form, Typography, Image, Row, Col, Input, Button } from "antd";
 const { Title } = Typography;
 
+const Part1 = ({ data, currentTab, title, isText, isAudio, movingTab }) => {
+  const [point, setPoint] = React.useState(0);
 
-
-const Part1 = ({ data }) => {
   const onFinish = (values) => {
     const answersCheck = data.answers;
-    let formatAnswer = [];
-    answersCheck.map(
-      (answer) => answer.dapan === 1 && formatAnswer.push(answer)
-    );
+    const answerUserSubmit = Object.values(values);
+    let newPoint = 0;
 
-    // eslint-disable-next-line no-console
-    console.log(formatAnswer, "<----");
-    const dapan_nguoidung = Object.values(values);
+    const newAnswers = [];
+    let defaultCharCode = 65;
+
+    for (let i = 0; i < answersCheck.length; i++) {
+      if (answersCheck[i].dapan === 1) {
+        newAnswers.push(String.fromCharCode(defaultCharCode));
+      }
+      defaultCharCode++;
+    }
+
+    for (let i = 0; i < 5; i++) {
+      if (String(answerUserSubmit[i]).toUpperCase() === newAnswers[i]) {
+        newPoint = newPoint + 1;
+      }
+    }
+    // a, e, f, g, h
+    setPoint(newPoint);
+    if(point > 0) {
+      movingTab(currentTab + 1, point);
+    }
+
+
   };
 
-  /*
-   */
   return (
     <div>
-      <Title level={3}>Part 1</Title>
+      <Title level={3}>{title}</Title>
       <Title level={5}>Description part</Title>
       <Image
         width="100%"
-        height={250}
-        src={`https://nikaws.cf/${data.listPartDocumentArray[0].url}`}
+        height={400}
+        src={`https://nikaws.cf/${
+          data.listPartDocumentArray[isAudio ? 1 : 0].url
+        }`}
       />
+
+      {isAudio && (
+        <audio
+          controls
+          style={{
+            padding: "5px 17px",
+            margin: 10,
+          }}
+        >
+          <source
+            src={`https://nikaws.cf/${data.listPartDocumentArray[0].url}`}
+            type="audio/mpeg"
+          />
+        </audio>
+      )}
 
       <Row gutter={[16, 32]} justify="space-between">
         <Col span={12}>
@@ -53,12 +85,16 @@ const Part1 = ({ data }) => {
                   paddingTop: 10,
                 }}
               >
-                <Image
-                  height="100%"
-                  src={`https://nikaws.cf/${elm.url}`}
-                  alt=""
-                  className="w-100 h-100"
-                />
+                {!isText ? (
+                  <Image
+                    height="100%"
+                    src={`https://nikaws.cf/${elm.url}`}
+                    alt=""
+                    className="w-100 h-100"
+                  />
+                ) : (
+                  <div style={{ paddingTop: 10 }}>{elm.noidung_dapan}</div>
+                )}
               </li>
             ))}
           </ol>
@@ -81,7 +117,6 @@ const Part1 = ({ data }) => {
           }}
         >
           {data.questions.map((question, index) => (
-            // {data.document.map((question, index) => (
             <Form.Item
               label={index + 1}
               name={question.id}
@@ -92,17 +127,14 @@ const Part1 = ({ data }) => {
           ))}
         </div>
 
+        <Title level={5}>Total Point: {point}</Title>
         <Form.Item
           style={{
             marginTop: 20,
           }}
-          wrapperCol={{
-            offset: 21,
-            span: 16,
-          }}
         >
           <Button type="primary" htmlType="submit">
-            Submit
+            Next Part 
           </Button>
         </Form.Item>
       </Form>
